@@ -16,11 +16,33 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30*" />
+            <RowDefinition Height="20*" />
+            <RowDefinition Height="10*" />
             <RowDefinition Height="70*" />
         </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*"/>
+                <ColumnDefinition Width="50*"/>
+            </Grid.ColumnDefinitions>
 
-        <TextBox x:Name="outputTextBox" Grid.Row="1" VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
-        <Button x:Name="RunButton" Content="运行"  Grid.Row="0" Click="RunButton_Click" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+            <!-- First StackPanel -->
+            <StackPanel Grid.Column="0">
+                <Label Content="frpc.exe Path:"/>
+                <TextBox x:Name="frpcPathTextBox" Width="300" Margin="0,0,0,10" Text="C:\frp\frpc.exe"/>
+                <Button Content="浏览" Click="BrowseFrpExePath"/>
+            </StackPanel>
+
+            <!-- Second StackPanel -->
+            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                <Label Content="frpc.toml Path:"/>
+                <TextBox x:Name="frpcConfigPathTextBox" Width="300" Margin="0,0,0,10" Text="C:\frp\frpc.toml"/>
+                <Button Content="浏览" Click="BrowseFrpConfigPath"/>
+            </StackPanel>
+        </Grid>
+
+        <Button x:Name="RunButton" Content="运行"  Grid.Row="1" Click="RunButton_Click" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
+        <TextBox x:Name="outputTextBox" Grid.Row="2" VerticalScrollBarVisibility="Auto" IsReadOnly="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"/>
     </Grid>
 </Window>

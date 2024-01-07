@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using Microsoft.Win32;
 using Hardcodet.Wpf.TaskbarNotification;
 
 
@@ -11,8 +12,8 @@ namespace frpc客户端
     public partial class MainWindow : Window
     {
         private Process process;
-        private readonly string frpcPath = @"C:\frp\frpc.exe";
-        private readonly string frpcConfigPath = @"C:\frp\frpc.toml";
+        private string frpcPath = @"C:\frp\frpc.exe";
+        private string frpcConfigPath = @"C:\frp\frpc.toml";
         private TaskbarIcon notifyIcon;
 
         public MainWindow()
@@ -42,6 +43,9 @@ namespace frpc客户端
 
         private void StartFrpClient()
         {
+
+            frpcPath = frpcPathTextBox.Text;
+            frpcConfigPath = frpcConfigPathTextBox.Text;
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = frpcPath,
@@ -113,5 +117,35 @@ namespace frpc客户端
             }
         }
 
+        private void BrowseFrpExePath(object sender, RoutedEventArgs e)
+        {
+            string selectedPath = BrowseFilePath();
+            if (!string.IsNullOrEmpty(selectedPath))
+            {
+                frpcPathTextBox.Text = selectedPath;
+            }
+        }
+
+        private void BrowseFrpConfigPath(object sender, RoutedEventArgs e)
+        {
+            string selectedPath = BrowseFilePath();
+            if (!string.IsNullOrEmpty(selectedPath))
+            {
+                frpcConfigPathTextBox.Text = selectedPath;
+            }
+        }
+
+        private string BrowseFilePath()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                return openFileDialog.FileName;
+            }
+            return null;
+        }
     }
+
 }
+
