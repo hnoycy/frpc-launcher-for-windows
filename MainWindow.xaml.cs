@@ -128,7 +128,7 @@ namespace frpc客户端
 
         private void BrowseFrpConfigPath(object sender, RoutedEventArgs e)
         {
-            string selectedPath = BrowseFilePath();
+            string selectedPath = BrowseFilePathToml();
             if (!string.IsNullOrEmpty(selectedPath))
             {
                 frpcConfigPathTextBox.Text = selectedPath;
@@ -138,7 +138,18 @@ namespace frpc客户端
         private string BrowseFilePath()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Executable Files (*.exe)|*.exe|All Files (*.*)|*.*";
+            openFileDialog.Filter = "frpc应用程序 (*.exe)|*.exe|All Files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                return openFileDialog.FileName;
+            }
+            return null;
+        }
+
+        private string BrowseFilePathToml()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "frpc toml文件 (*.toml)|*.toml|All Files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
                 return openFileDialog.FileName;
