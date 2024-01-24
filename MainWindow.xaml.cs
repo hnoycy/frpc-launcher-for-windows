@@ -5,13 +5,13 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 using Hardcodet.Wpf.TaskbarNotification;
-
+using System.Collections.Generic;
 
 namespace frpc客户端
 {
     public partial class MainWindow : Window
     {
-        private Process process;
+        private List<Process> processes = new List<Process>();
         private string frpcPath = @"C:\frp\frpc.exe";
         private string frpcConfigPath = @"C:\frp\frpc.toml";
         private TaskbarIcon notifyIcon;
@@ -46,33 +46,45 @@ namespace frpc客户端
 
             frpcPath = frpcPathTextBox.Text;
             frpcConfigPath = frpcConfigPathTextBox.Text;
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                FileName = frpcPath,
-                Arguments = $"-c {frpcConfigPath}",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden
-            };
+            string[] pathArray = frpcConfigPath.Split(';');
 
-            process = new Process { StartInfo = startInfo };
-            process.OutputDataReceived += (s, e) => UpdateOutput(e.Data);
-            process.ErrorDataReceived += (s, e) => UpdateOutput(e.Data);
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
+            foreach (string path in pathArray)
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = frpcPath,
+                    Arguments = $"-c {path}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    WindowStyle = ProcessWindowStyle.Hidden
+                };
+
+
+                Process process = new Process { StartInfo = startInfo };
+                process.OutputDataReceived += (s, e) => UpdateOutput(e.Data);
+                process.ErrorDataReceived += (s, e) => UpdateOutput(e.Data);
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                processes.Add(process);
+            }
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            // 中止命令行进程
-            if (process != null && !process.HasExited)
+            foreach (var process in processes)
             {
-                process.Kill();
-                outputTextBox.AppendText("已终止Frpc");
+                // 中止命令行进程
+                if (process != null && !process.HasExited)
+                {
+                    process.Kill();
+                    outputTextBox.AppendText("已终止Frpc\n");
+                }
             }
+            processes.Clear();
         }
 
         private void UpdateOutput(string message)
@@ -156,6 +168,12 @@ namespace frpc客户端
             }
             return null;
         }
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            // 执行你想要的关闭时的代码
+            StopButton_Click(null, null);
+        }
+
     }
 
 }
